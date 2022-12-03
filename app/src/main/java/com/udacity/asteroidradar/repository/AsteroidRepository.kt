@@ -41,7 +41,7 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
 //                .getAsteroids("2022-01-01","2023-08-08", Constants.YOUR_API_KEY)
 //                .await()
             println("dra" + " playlist is" + playlist)
-            database.asteroidDao.insertAll(*playlist.asDatabase)
+            database.asteroidDao.insertAll(*playlist.asDatabaseModel())
         }
     }
 
