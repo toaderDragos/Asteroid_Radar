@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -44,19 +45,25 @@ class MainFragment : Fragment() {
         binding.asteroidRecycler.adapter = myAdapter
 
         /** 1. Download if internet is present
-         * 2.Observe when it downloads the image. It can return either the url or noImage*/
+         * 2.Observe when it downloads the image. It can return either the url or noImage
+         * */
         if (isInternetAvailable(requireContext())) {
+            println("dra result is true")
             viewModel.fromJSONtoPicture()
-        }
-
-        viewModel.fetchedImageUrlOrNoImage.observe(viewLifecycleOwner) {
-            println("dra in observer it has the following value: " + it)
-            if (it != "noImage") {
-                Picasso.get().load(it)
-                    .into(binding.activityMainImageOfTheDay.activity_main_image_of_the_day)
-            } else {
-                binding.activityMainImageOfTheDay.activity_main_image_of_the_day.setImageResource(R.drawable.placeholder_picture_of_day)
+            viewModel.fetchedImageUrlOrNoImage.observe(viewLifecycleOwner) {
+                println("dra in observer it has the following value: " + it)
+                if (it != "noImage") {
+                    Picasso.get().load(it)
+                        .into(binding.activityMainImageOfTheDay.activity_main_image_of_the_day)
+                } else {
+                    binding.activityMainImageOfTheDay.activity_main_image_of_the_day.setImageResource(
+                        R.drawable.placeholder_picture_of_day
+                    )
+                }
             }
+        } else {
+            Toast.makeText(context, "Please connect to the internet!", Toast.LENGTH_SHORT)
+                .show()
         }
 
         /** Observing when it downloads the title */
@@ -100,8 +107,7 @@ class MainFragment : Fragment() {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkCapabilities = connectivityManager.activeNetwork ?: return false
-        val actNw =
-            connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+        val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
         result = when {
             actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true

@@ -20,6 +20,10 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
     val first_date = getNextSevenDaysFormattedDates()[0]
     val last_date = getNextSevenDaysFormattedDates()[7]
 
+    fun deleteYesterdaysAsteroids() {
+        database.asteroidDao.deleteYesterday(first_date)
+    }
+
     /**
      * Refresh the videos stored in the offline cache.
      *
@@ -29,16 +33,21 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
      *
      * To actually load the asteroids for use, observe [asteroids]
      */
+
     suspend fun refreshAsteroids() {
-        withContext(Dispatchers.IO) {
-            val playlist = parseAsteroidsJsonResult(
-                JSONObject(
-                    Network.asteroidsService
-                        .getAsteroids(first_date, last_date, Constants.YOUR_API_KEY)
+        try {
+            withContext(Dispatchers.IO) {
+                val playlist = parseAsteroidsJsonResult(
+                    JSONObject(
+                        Network.asteroidsService
+                            .getAsteroids(first_date, last_date, Constants.YOUR_API_KEY)
+                    )
                 )
-            )
 //            println("dra" + " playlist is" + playlist)
-            database.asteroidDao.insertAll(*NetworkAsteroidContainer(playlist).asDatabaseModel())
+                database.asteroidDao.insertAll(*NetworkAsteroidContainer(playlist).asDatabaseModel())
+            }
+        } catch (e: Exception) {
+            println("dra exception in fetching asteroids ")
         }
     }
 

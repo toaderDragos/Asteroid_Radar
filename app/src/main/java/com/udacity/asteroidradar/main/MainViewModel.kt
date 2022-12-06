@@ -43,6 +43,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 //        fromJSONtoPicture()
     }
 
+    /*** These asteroids are called from the room db through the repository */
     val fetchedAsteroidList = asteroidsRepository.asteroids
 
     /**
