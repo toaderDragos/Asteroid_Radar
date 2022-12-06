@@ -20,7 +20,6 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
     val first_date = getNextSevenDaysFormattedDates()[0]
     val last_date = getNextSevenDaysFormattedDates()[7]
 
-
     /**
      * Refresh the videos stored in the offline cache.
      *

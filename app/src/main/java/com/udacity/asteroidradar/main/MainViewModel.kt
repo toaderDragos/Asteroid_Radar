@@ -4,14 +4,19 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.api.Constants
 import com.udacity.asteroidradar.api.Network
+import com.udacity.asteroidradar.api.getNextSevenDaysFormattedDates
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.repository.AsteroidRepository
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    val todaysAsteroids = mutableListOf<Asteroid>()
 
     private val database = getDatabase(application)
     private val asteroidsRepository = AsteroidRepository(database)
@@ -24,6 +29,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val contentDescriptionImg: LiveData<String>
         get() = _contentDescriptionImg
 
+    private val _sortedAsteroids = MutableLiveData<List<Asteroid>>()
+    val sortedAsteroids: LiveData<List<Asteroid>>
+        get() = _sortedAsteroids
 
     /**
      * init{} is called immediately when this ViewModel is created.
@@ -32,7 +40,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             asteroidsRepository.refreshAsteroids()
         }
-        fromJSONtoPicture()
+//        fromJSONtoPicture()
     }
 
     val fetchedAsteroidList = asteroidsRepository.asteroids
@@ -42,7 +50,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * Otherwise you can;t guarantee that the results from the API get saved
      */
 
-    private fun fromJSONtoPicture() {
+    fun fromJSONtoPicture() {
         var fetchedMediaType = ""
         var fetchedTitle = "Image Title"
         var fetchedUrl = ""
@@ -72,6 +80,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _contentDescriptionImg.value = fetchedTitle
         }
     }
+
+    // filter
+    fun sortAsteroidsByDate() {
+        _sortedAsteroids.value = fetchedAsteroidList.value?.sortedBy { it.closeApproachDate }
+        println("dra sorted and fetched Asteroids are " + _sortedAsteroids.value + " " + fetchedAsteroidList.value)
+    }
+
+    fun showTodayAsteroids() {
+        val todaysDate = getNextSevenDaysFormattedDates()[0]
+        for (asteroid in fetchedAsteroidList.value!!) {
+            if (asteroid.closeApproachDate == todaysDate) {
+//                println("dra avem datele:" + asteroid.closeApproachDate +"|si|" + todaysDate)
+                todaysAsteroids.add(asteroid)
+            }
+        }
+    }
+
 
     /**
      * Factory for constructing MAinViewModel with parameter
