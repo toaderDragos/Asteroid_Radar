@@ -6,15 +6,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
+import kotlinx.android.synthetic.main.fragment_main.view.*
 
 class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this, MainViewModel.Factory(requireActivity().application)).get(
-            MainViewModel::class.java
-        )
+        ViewModelProvider(this, MainViewModel.Factory(requireActivity().application))
+            .get(MainViewModel::class.java)
     }
 
     private var myAdapter: AsteroidAdapter? = null
@@ -28,31 +29,36 @@ class MainFragment : Fragment() {
         binding.setLifecycleOwner(viewLifecycleOwner)
         binding.viewModel = viewModel
 
-        // not sure bc if we bind the recyclerview first without the list it may crash
-        binding.asteroidRecycler.adapter = AsteroidAdapter(AsteroidClick {
-            viewModel.displayAsteroidDetails(it)
+        myAdapter = AsteroidAdapter(AsteroidClick {
+            this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
         })
 
-        /*** Navigate to details fragment */
-        viewModel.navigateToSelectedAsteroid.observe(viewLifecycleOwner, Observer {
-            if (null != it) {
-                this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
-                viewModel.displayAsteroidDetailsComplete()
+        // First we connect to the list of fetched asteroids and then we bind it to the adapter
+        viewModel.fetchedAsteroidList.observe(viewLifecycleOwner) { asteroids ->
+            asteroids?.apply {
+                myAdapter!!.asteroids = viewModel.fetchedAsteroidList.value!!
             }
+        }
+        binding.asteroidRecycler.adapter = myAdapter
+
+        // Observing when it downloads the image. It can return either the placeholder, the url or noImage
+        viewModel.fetchedImageUrlOrNoImage.observe(viewLifecycleOwner, Observer {
+            println("dra in observer it are urmatoarea valoare: " + it)
+            if (it != "noImage") {
+                Picasso.get().load(it)
+                    .into(binding.activityMainImageOfTheDay.activity_main_image_of_the_day)
+            } else {
+                binding.activityMainImageOfTheDay.activity_main_image_of_the_day.setImageResource(R.drawable.placeholder_picture_of_day)
+            }
+        })
+
+        // Observing when it downloads the title
+        viewModel.contentDescriptionImg.observe(viewLifecycleOwner, Observer {
+            binding.activityMainImageOfTheDay.setContentDescription(it)
         })
 
         setHasOptionsMenu(true)
         return binding.root
-    }
-
-    /** Observing the fetched list and sending it to the adapter.  */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-//        viewModel.fetchedAsteroidList.observe(viewLifecycleOwner, Observer<List<Asteroid>> { asteroids ->
-//            asteroids?.apply {
-//                myAdapter!!.asteroids = asteroids
-//            }
-//        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -61,6 +67,8 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+
         return true
     }
 }

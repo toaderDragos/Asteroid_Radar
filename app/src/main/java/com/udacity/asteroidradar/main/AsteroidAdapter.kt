@@ -12,7 +12,7 @@ import com.udacity.asteroidradar.databinding.ItemAsteroidRecyclerviewBinding
 class AsteroidAdapter(val callback: AsteroidClick) : RecyclerView.Adapter<AsteroidViewHolder>() {
 
     /**
-     * The videos that our Adapter will show
+     * A list that is replaced by the downloaded items
      */
     var asteroids: List<Asteroid> = listOf(
         Asteroid(
@@ -61,12 +61,17 @@ class AsteroidAdapter(val callback: AsteroidClick) : RecyclerView.Adapter<Astero
             it.codename.text = asteroids[position].codename
             it.date.text = asteroids[position].closeApproachDate
             it.asteroidCallback = callback
+            // bind it because you have it defined in XML as a variable
+            it.asteroid = asteroids[position]
+            if (asteroids[position].isPotentiallyHazardous == true) {
+                it.imageSmileyFace.setImageResource(R.drawable.ic_status_potentially_hazardous)
+            }
         }
     }
 }
 
 /**
- * ViewHolder for DevByte items. All work is done by data binding.
+ * ViewHolder for Asteroid Items . All work is done by data binding.
  */
 class AsteroidViewHolder(val viewDataBinding: ItemAsteroidRecyclerviewBinding) :
     RecyclerView.ViewHolder(viewDataBinding.root) {

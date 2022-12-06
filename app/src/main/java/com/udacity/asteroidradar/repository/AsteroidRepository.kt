@@ -3,9 +3,7 @@ package com.udacity.asteroidradar.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.api.Constants
-import com.udacity.asteroidradar.api.Network
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
+import com.udacity.asteroidradar.api.*
 import com.udacity.asteroidradar.database.AsteroidsDatabase
 import com.udacity.asteroidradar.database.asDomainModel
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +16,10 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
         Transformations.map(database.asteroidDao.getAsteroids()) {
             it.asDomainModel()
         }
+
+    val first_date = getNextSevenDaysFormattedDates()[0]
+    val last_date = getNextSevenDaysFormattedDates()[7]
+
 
     /**
      * Refresh the videos stored in the offline cache.
@@ -33,16 +35,13 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
             val playlist = parseAsteroidsJsonResult(
                 JSONObject(
                     Network.asteroidsService
-                        .getAsteroids("2022-01-01", "2023-08-08", Constants.YOUR_API_KEY)
+                        .getAsteroids(first_date, last_date, Constants.YOUR_API_KEY)
                 )
             )
-
-//            val playlist = com.udacity.asteroidradar.api.Network.asteroids
-//                .getAsteroids("2022-01-01","2023-08-08", Constants.YOUR_API_KEY)
-//                .await()
-            println("dra" + " playlist is" + playlist)
-            database.asteroidDao.insertAll(*playlist.asDatabaseModel())
+//            println("dra" + " playlist is" + playlist)
+            database.asteroidDao.insertAll(*NetworkAsteroidContainer(playlist).asDatabaseModel())
         }
     }
+
 
 }

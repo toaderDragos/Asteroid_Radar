@@ -21,6 +21,6 @@
     <string name="nasa_picture_of_day_content_description_format">NASA\'s picture of day: %s</string>
     <string name="date">Date</string>
     <string name="title">title</string>
-    <string name="press_to_see_what_au_means">Press to see what aumeans</string>
+    <string name="press_to_see_what_au_means">Press to see what au means</string>
     <string name="image_of_a_happy_or_sad_asteroid">Image of a happy or sad asteroid</string>
 </resources>
