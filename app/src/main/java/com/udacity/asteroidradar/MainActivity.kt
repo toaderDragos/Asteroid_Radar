@@ -10,9 +10,3 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 }
-
-/**
- * DID NOT PARSE DATA AS RECCOMENDED
- * DID NOT PROCESS DATES
- * DID NOT IMPLEMENT FILTERS
- */

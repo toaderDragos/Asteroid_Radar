@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.bindAsteroidStatusImage
 import com.udacity.asteroidradar.databinding.ItemAsteroidRecyclerviewBinding
 
 class AsteroidAdapter(val callback: AsteroidClick) : RecyclerView.Adapter<AsteroidViewHolder>() {
@@ -61,12 +62,17 @@ class AsteroidAdapter(val callback: AsteroidClick) : RecyclerView.Adapter<Astero
             it.codename.text = asteroids[position].codename
             it.date.text = asteroids[position].closeApproachDate
             it.asteroidCallback = callback
+            it.imageSmileyFace
             // bind it because you have it defined in XML as a variable
             it.asteroid = asteroids[position]
-            if (asteroids[position].isPotentiallyHazardous == true) {
-                it.imageSmileyFace.setImageResource(R.drawable.ic_status_potentially_hazardous)
-            }
         }
+        if (asteroids[position].isPotentiallyHazardous == true) {
+            //holder.viewDataBinding.imageSmileyFace.setImageResource(R.drawable.ic_status_potentially_hazardous)
+            bindAsteroidStatusImage(holder.viewDataBinding.imageSmileyFace, true)
+        } else {
+            bindAsteroidStatusImage(holder.viewDataBinding.imageSmileyFace, false)
+        }
+
     }
 }
 
