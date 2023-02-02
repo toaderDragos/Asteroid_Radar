@@ -1,4 +1,4 @@
-# Purpose of this Folder
+# An asteroid radar app that sends live data from the NASA API
 
 ## Android Kotlin Nanodegree by Google in collaboration with Udacity
 
