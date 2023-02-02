@@ -1,14 +1,12 @@
 # Purpose of this Folder
 
-This folder should contain the scaffolded project files to get a student started on their project.
-This repo will be added to the Classroom for students to use, so please do not have any solutions in
-this folder.
+## Android Kotlin Nanodegree by Google in collaboration with Udacity
 
-## Note: Android Kotlin Gradle Update
+Uses MVVM architecture , LiveData, coroutines and gets data from the NASA API.
+Uses liveData and Databinding.
+It uses Room Database and implements a repository. 
+In coroutines context, it performs network I/O outside the main thread using Dispatchers.IO.
+Uses Moshi and Retrofit Service to fetch a list of asteroids from the API.
 
-Use the updated Gradle version in the `~/gradle/wrapper/gradle-wrapper.properties` file:
 
-```
-distributionUrl = https\://services.gradle.org/distributions/gradle-6.1.1-all.zip
-```
 Please insert your own API key for NASA in .api/Constants
